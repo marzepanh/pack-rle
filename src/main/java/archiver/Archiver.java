@@ -5,21 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class RLE {
-    public static void main(String[] args) throws IOException {
-
-        RLE pack =  new RLE();
-        pack.encode("src/main/java/archiver/input.txt",
-                "src/main/java/archiver/output.txt");
-        pack.decode(
-                "src/main/java/archiver/output.txt",
-                "src/main/java/archiver/result.txt");
-    }
+public class Archiver {
     // AAABAB
     //  repetitive part: 3A. positive byte of length
     // not-repetitive: 3BAB. negative byte of length
 
-    public boolean encode(String inputFileName, String outputFileName) throws IOException {
+    public void encode(String inputFileName, String outputFileName) throws IOException {
         try (FileInputStream in = new FileInputStream(inputFileName)) {
             try (FileOutputStream out = new FileOutputStream(outputFileName)) {
                 int rLength = 1;
@@ -37,7 +28,7 @@ public class RLE {
                             buffer.clear();
                         }
                         rLength++;
-                        //length <= 127
+                        //rlength == 127
                         if (rLength == 127) {
                             out.write(rLength);
                             out.write(current);
@@ -83,10 +74,9 @@ public class RLE {
                 }
             }
         }
-        return true;
     }
 
-    public boolean decode(String inputFileName, String outputFileName) throws IOException {
+    public void decode(String inputFileName, String outputFileName) throws IOException {
         try (FileInputStream in = new FileInputStream(inputFileName)) {
             try (FileOutputStream out = new FileOutputStream(outputFileName)) {
                 while (in.available() > 0) {
@@ -101,44 +91,5 @@ public class RLE {
                 }
             }
         }
-        return true;
     }
 }
-/*
-
-*/
-
-
-/*public static String encode(String input) {
-        StringBuilder result = new StringBuilder();
-        int rLength = 1;
-        int nrLength = 0;
-        StringBuilder nrBuffer = new StringBuilder();
-        for (int i = 0; i < input.length() - 1; i++) {
-            boolean nextIsEquals = input.charAt(i) == input.charAt(i + 1);
-            if (nextIsEquals) {
-                if (nrLength != 0) {
-                    result.append(-1 * nrLength);
-                    result.append(nrBuffer);
-                    nrBuffer.setLength(0); //clear nrBuffer
-                    nrLength = 0;
-                }
-                rLength++;
-            }
-            if (!nextIsEquals && rLength != 1) {
-                result.append(rLength);
-                result.append(input.charAt(i));
-                rLength = 1;
-                continue;
-            }
-            if (!nextIsEquals) {
-                nrLength++;
-                nrBuffer.append(input.charAt(i));
-                }
-            }
-        char last = input.charAt(input.length() - 1);
-        if (rLength != 1) result.append(rLength).append(last);
-        if (nrLength != 0) result.append(-1 * (nrLength + 1)).append(nrBuffer.append(last));
-
-        return result.toString();
-    }*/
