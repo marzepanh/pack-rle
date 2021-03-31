@@ -7,17 +7,17 @@ import java.io.IOException;
 
 public class ArchiverLauncher {
 
-    @Option(name = "-z", metaVar = "Packing", required = true, forbids = {"-u"}, usage = "Packing file")
+    @Option(name = "-z", metaVar = "Packing", forbids = {"-u"}, usage = "Packing file")
     private boolean pack;
 
-    @Option(name = "-u", metaVar = "Unpacking", required = true, forbids = {"-z"}, usage = "Unpacking file")
+    @Option(name = "-u", metaVar = "Unpacking", forbids = {"-z"}, usage = "Unpacking file")
     private boolean unpack;
 
     @Option(name = "-out", metaVar = "OutputName", usage = "Output file name")
     private String outputFileName;
 
     @Argument(metaVar = "InputName", required = true, usage = "Input file name")
-    private String inputFileName;
+    private String inputFileName; //file
 
 //Command Line: pack-rle [-z|-u] [-out outputname.txt] inputname.txt
     public static void main(String[] args) {
@@ -29,18 +29,19 @@ public class ArchiverLauncher {
         try {
             parser.parseArgument(args);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage()); //?
         }
 
         Archiver rle = new Archiver();
         try {
-            if (outputFileName == null) outputFileName = inputFileName + "_result";
+            if (outputFileName == null)
+                outputFileName = inputFileName.split("\\.")[0] + "_result.txt";
             if (pack) rle.encode(inputFileName, outputFileName);
                 else rle.decode(inputFileName, outputFileName);
             if (pack) System.out.println("Successful packing");
                 else System.out.println("Successful unpacking");
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 }
