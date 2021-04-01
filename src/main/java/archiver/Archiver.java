@@ -1,5 +1,6 @@
 package archiver;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,7 +11,7 @@ public class Archiver {
     //  repetitive part: 3A. positive byte of length
     // not-repetitive: 3BAB. negative byte of length
 
-    public void encode(String inputFileName, String outputFileName) throws IOException {
+    public void encode(File inputFileName, File outputFileName) throws IOException {
         try (FileInputStream in = new FileInputStream(inputFileName);
              FileOutputStream out = new FileOutputStream(outputFileName)) {
                 int rLength = 1;
@@ -69,7 +70,7 @@ public class Archiver {
             }
         }
 
-    public void decode(String inputFileName, String outputFileName) throws IOException {
+    public void decode(File inputFileName, File outputFileName) throws IOException {
         try (FileInputStream in = new FileInputStream(inputFileName);
              FileOutputStream out = new FileOutputStream(outputFileName)) {
                 while (in.available() > 0) {

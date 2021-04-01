@@ -1,8 +1,11 @@
 package archiver;
 
 import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+
+import java.io.File;
 import java.io.IOException;
 
 public class ArchiverLauncher {
@@ -14,10 +17,10 @@ public class ArchiverLauncher {
     private boolean unpack;
 
     @Option(name = "-out", metaVar = "OutputName", usage = "Output file name")
-    private String outputFileName;
+    private File outputFileName;
 
     @Argument(metaVar = "InputName", required = true, usage = "Input file name")
-    private String inputFileName; //file
+    private File inputFileName;
 
 //Command Line: pack-rle [-z|-u] [-out outputname.txt] inputname.txt
     public static void main(String[] args) {
@@ -28,25 +31,26 @@ public class ArchiverLauncher {
         CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
-        } catch (Exception e) {
-            System.out.println(e.getMessage()); //?
+        } catch (CmdLineException e) {
+            System.out.println(e.getMessage());
+            System.exit(0);
         }
 
         Archiver rle = new Archiver();
         try {
             if (pack) {
                 if (outputFileName == null)
-                    outputFileName = inputFileName.split("\\.")[0] + ".pack";
-                if (!outputFileName.split("\\.")[1].equals("pack")) {
+                    outputFileName = new File(inputFileName.getName().split("\\.")[0] + ".pack");
+                if (!outputFileName.getName().split("\\.")[1].equals("pack")) {
                     throw new IOException("File extension .pack is required");
                 }
                 rle.encode(inputFileName, outputFileName);
             }
             if (unpack) {
                 if (outputFileName == null)
-                    outputFileName = inputFileName.split("\\.")[0] + "_res.txt";
+                    outputFileName = new File(inputFileName.getName().split("\\.")[0] + "_res.txt");
                 rle.decode(inputFileName, outputFileName);
-                if (!inputFileName.split("\\.")[1].equals("pack")) {
+                if (!inputFileName.getName().split("\\.")[1].equals("pack")) {
                     throw new IOException("File extension .pack is required");
                 }
             }
@@ -58,3 +62,5 @@ public class ArchiverLauncher {
         }
     }
 }
+//5. Вынести повторяющийся код в отдельную функцию
+// есть ли название с точками в других операционках?
