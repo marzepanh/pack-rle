@@ -62,11 +62,6 @@ public class Archiver {
                     current = next;
                     next = in.read();
                 }
-                //clean buffer
-/*                if (rLength != 1) {
-                    out.write(rLength);
-                    out.write(current);
-                }*/
                 if (nrLength != 0) {
                     out.write(128 + nrLength);
                     for (Integer element: buffer) out.write(element);
