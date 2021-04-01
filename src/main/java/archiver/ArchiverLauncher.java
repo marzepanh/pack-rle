@@ -34,14 +34,27 @@ public class ArchiverLauncher {
 
         Archiver rle = new Archiver();
         try {
-            if (outputFileName == null)
-                outputFileName = inputFileName.split("\\.")[0] + "_result.txt";
-            if (pack) rle.encode(inputFileName, outputFileName);
-                else rle.decode(inputFileName, outputFileName);
+            if (pack) {
+                if (outputFileName == null)
+                    outputFileName = inputFileName.split("\\.")[0] + "_result.pack";
+                if (!outputFileName.split("\\.")[1].equals("pack")) {
+                    throw new IOException("File extension .pack is required");
+                }
+                rle.encode(inputFileName, outputFileName);
+            }
+            if (unpack) {
+                if (outputFileName == null)
+                    outputFileName = inputFileName.split("\\.")[0] + "_result.txt";
+                rle.decode(inputFileName, outputFileName);
+                if (!inputFileName.split("\\.")[1].equals("pack")) {
+                    throw new IOException("File extension .pack is required");
+                }
+            }
             if (pack) System.out.println("Successful packing");
                 else System.out.println("Successful unpacking");
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            System.out.println("Command Line: pack-rle [-z|-u] [-out outputname.pack] inputname.txt");
         }
     }
 }
