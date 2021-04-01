@@ -36,7 +36,7 @@ public class ArchiverLauncher {
         try {
             if (pack) {
                 if (outputFileName == null)
-                    outputFileName = inputFileName.split("\\.")[0] + "_result.pack";
+                    outputFileName = inputFileName.split("\\.")[0] + ".pack";
                 if (!outputFileName.split("\\.")[1].equals("pack")) {
                     throw new IOException("File extension .pack is required");
                 }
@@ -44,7 +44,7 @@ public class ArchiverLauncher {
             }
             if (unpack) {
                 if (outputFileName == null)
-                    outputFileName = inputFileName.split("\\.")[0] + "_result.txt";
+                    outputFileName = inputFileName.split("\\.")[0] + "_res.txt";
                 rle.decode(inputFileName, outputFileName);
                 if (!inputFileName.split("\\.")[1].equals("pack")) {
                     throw new IOException("File extension .pack is required");
