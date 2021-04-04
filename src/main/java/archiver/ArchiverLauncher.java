@@ -17,14 +17,22 @@ public class ArchiverLauncher {
     private boolean unpack;
 
     @Option(name = "-out", metaVar = "OutputName", usage = "Output file name")
-    private File outputFileName;
+    private File outputFile;
 
     @Argument(metaVar = "InputName", required = true, usage = "Input file name")
-    private File inputFileName;
+    private File inputFile;
 
 //Command Line: pack-rle [-z|-u] [-out outputname.txt] inputname.txt
     public static void main(String[] args) {
         new ArchiverLauncher().launch(args);
+    }
+
+    private void foo(String fileName, String extension) throws IOException {
+        if (outputFile == null)
+            outputFile = new File(inputFile.getName().split("\\.")[0] + extension);
+        if (!fileName.split("\\.")[1].equals("pack")) {
+            throw new IOException("File extension .pack is required");
+        }
     }
 
     private void launch(String[] args) {
@@ -35,24 +43,15 @@ public class ArchiverLauncher {
             System.out.println(e.getMessage());
             System.exit(0);
         }
-
         Archiver rle = new Archiver();
         try {
             if (pack) {
-                if (outputFileName == null)
-                    outputFileName = new File(inputFileName.getName().split("\\.")[0] + ".pack");
-                if (!outputFileName.getName().split("\\.")[1].equals("pack")) {
-                    throw new IOException("File extension .pack is required");
-                }
-                rle.encode(inputFileName, outputFileName);
+                foo(outputFile.getName(), ".pack");
+                rle.encode(inputFile, outputFile);
             }
             if (unpack) {
-                if (outputFileName == null)
-                    outputFileName = new File(inputFileName.getName().split("\\.")[0] + "_res.txt");
-                rle.decode(inputFileName, outputFileName);
-                if (!inputFileName.getName().split("\\.")[1].equals("pack")) {
-                    throw new IOException("File extension .pack is required");
-                }
+                foo(inputFile.getName(), "_res.txt");
+                rle.decode(inputFile, outputFile);
             }
             if (pack) System.out.println("Successful packing");
                 else System.out.println("Successful unpacking");
@@ -62,5 +61,3 @@ public class ArchiverLauncher {
         }
     }
 }
-//5. Вынести повторяющийся код в отдельную функцию
-// есть ли название с точками в других операционках?

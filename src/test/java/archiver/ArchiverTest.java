@@ -2,29 +2,56 @@ package archiver;
 
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
+import java.io.PrintStream;
 
-import static org.junit.Assert.*;
+import static org.apache.commons.io.FileUtils.contentEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ArchiverTest {
+/*    private File getFile(String name) throws URISyntaxException {
+        URL url =  getClass().getResource(name);
+        return new File(url.toURI());
+    }*/
+    private void main(String [] args) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        PrintStream old = System.out;
+        PrintStream ps = new PrintStream(baos);
+        System.setOut(ps);
+
+        ArchiverLauncher.main(args);
+
+        System.out.flush();
+        System.setOut(old);
+        System.out.println("" + baos.toString());
+}
 
     @Test
     public void archiver() throws IOException {
         Archiver pack = new Archiver();
-        File in = new File("files/input.txt"); //maven resource folder, default maven layout
-        pack.encode(new File("files/input.txt"), new File("files/output.pack"));
-        pack.decode(new File("files/output.pack"), new File("files/result.txt"));
-        File res = new File("files/result.txt");
-        File out = new File("files/output.pack");
-        List<String> c1 = Files.readAllLines(in.toPath());
-        List<String> c2 = Files.readAllLines(res.toPath());
-        assertTrue(c1.containsAll(c2));
+
+        File temp = new File("src/main/resources/temp.pack");
+        File res = new File("src/main/resources/result.txt");
+        File in = new File("src/main/resources/input.txt");
+        pack.encode(in, temp);
+        pack.decode(temp, res);
+        assertTrue(contentEquals(in, res));
         res.delete();
-        out.delete();
+        temp.delete();
     }
-//4. тесты для логики
-    //5. resources
+
+    @Test
+    public void archiverLauncher() throws IOException {
+        File in = new File("src/main/resources/input.txt");
+        File temp = new File("temp.pack");
+        File res = new File("result.txt");
+        main("-z -out temp.pack src/main/resources/input.txt".split(" "));
+        main("-u -out result.txt temp.pack".split(" "));
+        assertTrue(contentEquals(in, res));
+        res.delete();
+        temp.delete();
+    }
 }
