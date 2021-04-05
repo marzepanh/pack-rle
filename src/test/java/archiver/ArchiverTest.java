@@ -6,16 +6,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import static org.apache.commons.io.FileUtils.contentEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ArchiverTest {
-/*    private File getFile(String name) throws URISyntaxException {
-        URL url =  getClass().getResource(name);
+    private File getFile(String name) throws URISyntaxException {
+        URL url = getClass().getClassLoader().getResource(name);
         return new File(url.toURI());
-    }*/
-    private void main(String [] args) {
+    }
+
+    private String main(String [] args) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         PrintStream old = System.out;
@@ -26,16 +30,17 @@ public class ArchiverTest {
 
         System.out.flush();
         System.setOut(old);
-        System.out.println("" + baos.toString());
+        System.out.println(baos.toString());
+        return baos.toString();
 }
 
     @Test
-    public void archiver() throws IOException {
+    public void archiver() throws IOException, URISyntaxException {
         Archiver pack = new Archiver();
+        File in = getFile("input.txt");
+        File temp = new File("temp.pack");
+        File res = new File("result.txt");
 
-        File temp = new File("src/main/resources/temp.pack");
-        File res = new File("src/main/resources/result.txt");
-        File in = new File("src/main/resources/input.txt");
         pack.encode(in, temp);
         pack.decode(temp, res);
         assertTrue(contentEquals(in, res));
@@ -44,13 +49,24 @@ public class ArchiverTest {
     }
 
     @Test
-    public void archiverLauncher() throws IOException {
-        File in = new File("src/main/resources/input.txt");
+    public void archiverLauncher() throws IOException, URISyntaxException {
+        File in = getFile("input.txt");
         File temp = new File("temp.pack");
         File res = new File("result.txt");
-        main("-z -out temp.pack src/main/resources/input.txt".split(" "));
-        main("-u -out result.txt temp.pack".split(" "));
+        assertEquals(main("-z -out temp.pack src/main/resources/input.txt".split(" ")),
+                "Successful packing" + System.lineSeparator());
+        assertEquals(main("-u -out result.txt temp.pack".split(" ")),
+                "Successful unpacking" + System.lineSeparator());
         assertTrue(contentEquals(in, res));
+
+        String expected = "File extension .pack is required" + System.lineSeparator()
+                + "Command Line: pack-rle [-z|-u] [-out outputname.pack] inputname.txt" +
+                System.lineSeparator();
+
+        String actual = main("-z -out temp.rar src/main/resources/input.txt".split(" "));
+        assertEquals(expected, actual);
+
+
         res.delete();
         temp.delete();
     }
