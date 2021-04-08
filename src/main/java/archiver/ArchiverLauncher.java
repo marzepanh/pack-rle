@@ -26,10 +26,11 @@ public class ArchiverLauncher {
     public static void main(String[] args) {
         new ArchiverLauncher().launch(args);
     }
-
-    private void foo(String fileName, String extension) throws IOException {
+    private void setOutputFile(String extension) {
         if (outputFile == null)
             outputFile = new File(inputFile.getName().split("\\.")[0] + extension);
+    }
+    private void foo(String fileName) throws IOException {
         if (!fileName.split("\\.")[1].equals("pack")) {
             throw new IOException("File extension .pack is required");
         }
@@ -46,11 +47,13 @@ public class ArchiverLauncher {
         Archiver rle = new Archiver();
         try {
             if (pack) {
-                foo(outputFile.getName(), ".pack");
+                setOutputFile(".pack");
+                foo(outputFile.getName());
                 rle.encode(inputFile, outputFile);
             }
             if (unpack) {
-                foo(inputFile.getName(), "_res.txt");
+                setOutputFile("_res.txt");
+                foo(inputFile.getName());
                 rle.decode(inputFile, outputFile);
             }
             if (pack) System.out.println("Successful packing");

@@ -66,7 +66,12 @@ public class ArchiverTest {
         String actual = main("-z -out temp.rar src/main/resources/input.txt".split(" "));
         assertEquals(expected, actual);
 
+        assertEquals(main("-z src/main/resources/input.txt".split(" ")),
+                "Successful packing" + System.lineSeparator());
 
+        new File("input.pack").delete();
+        new File("result.pack").delete();
+        new File("temp_res.txt").delete();
         res.delete();
         temp.delete();
     }
