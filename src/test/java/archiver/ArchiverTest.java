@@ -1,7 +1,6 @@
 package archiver;
 
 import org.junit.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,21 +14,26 @@ import static org.junit.Assert.assertTrue;
 
 public class ArchiverTest {
     private File getFile(String name) throws URISyntaxException {
-        URL url = getClass().getClassLoader().getResource(name);
+        URL url = ArchiverTest.class.getResource(name);
+        System.out.println(url);
         return new File(url.toURI());
     }
 
     private String main(String [] args) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        PrintStream old = System.out;
+        PrintStream out = System.out;
+        PrintStream err = System.err;
         PrintStream ps = new PrintStream(baos);
         System.setOut(ps);
+        System.setErr(ps);
 
         ArchiverLauncher.main(args);
 
         System.out.flush();
-        System.setOut(old);
+        System.err.flush();
+        System.setOut(out);
+        System.setErr(err);
         System.out.println(baos.toString());
         return baos.toString();
 }
@@ -37,7 +41,7 @@ public class ArchiverTest {
     @Test
     public void archiver() throws IOException, URISyntaxException {
         Archiver pack = new Archiver();
-        File in = getFile("input.txt");
+        File in = getFile("/resources/input.txt");
         File temp = new File("temp.pack");
         File res = new File("result.txt");
 
@@ -50,10 +54,10 @@ public class ArchiverTest {
 
     @Test
     public void archiverLauncher() throws IOException, URISyntaxException {
-        File in = getFile("input.txt");
+        File in = getFile("/resources/input.txt");
         File temp = new File("temp.pack");
         File res = new File("result.txt");
-        assertEquals(main("-z -out temp.pack src/main/resources/input.txt".split(" ")),
+        assertEquals(main("-z -out temp.pack src/test/resources/input.txt".split(" ")),
                 "Successful packing" + System.lineSeparator());
         assertEquals(main("-u -out result.txt temp.pack".split(" ")),
                 "Successful unpacking" + System.lineSeparator());
@@ -63,10 +67,10 @@ public class ArchiverTest {
                 + "Command Line: pack-rle [-z|-u] [-out outputname.pack] inputname.txt" +
                 System.lineSeparator();
 
-        String actual = main("-z -out temp.rar src/main/resources/input.txt".split(" "));
+        String actual = main("-z -out temp.rar src/test/resources/input.txt".split(" "));
         assertEquals(expected, actual);
 
-        assertEquals(main("-z src/main/resources/input.txt".split(" ")),
+        assertEquals(main("-z src/test/resources/input.txt".split(" ")),
                 "Successful packing" + System.lineSeparator());
 
         new File("input.pack").delete();

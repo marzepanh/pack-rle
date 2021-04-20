@@ -41,7 +41,7 @@ public class ArchiverLauncher {
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             System.exit(0);
         }
         Archiver rle = new Archiver();
@@ -59,7 +59,7 @@ public class ArchiverLauncher {
             if (pack) System.out.println("Successful packing");
                 else System.out.println("Successful unpacking");
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             System.out.println("Command Line: pack-rle [-z|-u] [-out outputname.pack] inputname.txt");
         }
     }
