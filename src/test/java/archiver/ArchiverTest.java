@@ -57,7 +57,8 @@ public class ArchiverTest {
         File in = getFile("/resources/input.txt");
         File temp = new File("temp.pack");
         File res = new File("result.txt");
-        assertEquals(main("-z -out temp.pack src/test/resources/input.txt".split(" ")),
+
+        assertEquals(main(("-z -out temp.pack " + in.toPath()).split(" ")),
                 "Successful packing" + System.lineSeparator());
         assertEquals(main("-u -out result.txt temp.pack".split(" ")),
                 "Successful unpacking" + System.lineSeparator());
@@ -67,10 +68,10 @@ public class ArchiverTest {
                 + "Command Line: pack-rle [-z|-u] [-out outputname.pack] inputname.txt" +
                 System.lineSeparator();
 
-        String actual = main("-z -out temp.rar src/test/resources/input.txt".split(" "));
+        String actual = main(("-z -out temp.rar " + in.toPath()).split(" "));
         assertEquals(expected, actual);
 
-        assertEquals(main("-z src/test/resources/input.txt".split(" ")),
+        assertEquals(main(("-z " + in.toPath()).split(" ")),
                 "Successful packing" + System.lineSeparator());
 
         new File("input.pack").delete();
