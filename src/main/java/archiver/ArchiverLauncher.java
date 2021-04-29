@@ -42,7 +42,7 @@ public class ArchiverLauncher {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
-            System.exit(0);
+            return;
         }
         Archiver rle = new Archiver();
         try {

@@ -14,8 +14,8 @@ import static org.junit.Assert.assertTrue;
 
 public class ArchiverTest {
     private File getFile(String name) throws URISyntaxException {
-        URL url = ArchiverTest.class.getResource(name);
-        System.out.println(url);
+        URL url = getClass().getClassLoader().getResource(name);
+        //System.out.println(url);
         return new File(url.toURI());
     }
 
@@ -41,7 +41,7 @@ public class ArchiverTest {
     @Test
     public void archiver() throws IOException, URISyntaxException {
         Archiver pack = new Archiver();
-        File in = getFile("/resources/input.txt");
+        File in = getFile("input.txt");
         File temp = new File("temp.pack");
         File res = new File("result.txt");
 
@@ -54,7 +54,7 @@ public class ArchiverTest {
 
     @Test
     public void archiverLauncher() throws IOException, URISyntaxException {
-        File in = getFile("/resources/input.txt");
+        File in = getFile("input.txt");
         File temp = new File("temp.pack");
         File res = new File("result.txt");
 
@@ -73,6 +73,9 @@ public class ArchiverTest {
 
         assertEquals(main(("-z " + in.toPath()).split(" ")),
                 "Successful packing" + System.lineSeparator());
+
+       assertEquals(main(("-zip " + in.toPath()).split(" ")), "\"-zip\" is not a valid option" + System.lineSeparator());
+
 
         new File("input.pack").delete();
         new File("result.pack").delete();
